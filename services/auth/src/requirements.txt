@@ -1,4 +1,7 @@
 Django==4.0
+django-stubs
 djangorestframework==3.13.1
 mypy
 gunicorn
+flake8
+psycopg2-binary
