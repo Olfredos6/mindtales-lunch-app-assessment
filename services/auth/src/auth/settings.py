@@ -6,6 +6,10 @@ import sys
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
+# Custom User Model
+AUTH_USER_MODEL = "core.User"
+
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
@@ -29,7 +33,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    # 'core',
+    'core',
 ]
 
 MIDDLEWARE = [
