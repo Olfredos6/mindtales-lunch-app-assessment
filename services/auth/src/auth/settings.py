@@ -15,7 +15,7 @@ SECRET_KEY = os.getenv('DJANGO_SECRET')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = bool(os.getenv('DJANGO_DEBUG'))
 
-print("---------------->", os.getenv("DJANGO_ALLOWED_HOSTS"))
+
 ALLOWED_HOSTS = os.getenv('DJANGO_ALLOWED_HOSTS', '').split(",")
 
 
@@ -28,6 +28,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
 ]
 
 MIDDLEWARE = [
@@ -134,3 +135,19 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Django-rest
+DEFAULT_RENDERER_CLASSES = ['rest_framework.renderers.JSONRenderer']
+REST_FRAMEWORK = {
+    # Use Django's standard `django.contrib.auth` permissions,
+    # or allow read-only access for unauthenticated users.
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated'
+    ],
+    'DEFAULT_RENDERER_CLASSES': DEFAULT_RENDERER_CLASSES,
+    'DEFAULT_PARSER_CLASSES': [
+        'rest_framework.parsers.JSONParser',
+        'rest_framework.parsers.MultiPartParser',
+        'rest_framework.parsers.FormParser',
+    ],
+}
