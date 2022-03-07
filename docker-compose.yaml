@@ -47,7 +47,7 @@ services:
     env_file:
       - ./global-django.env
       - ./services/restaurants/.env
-    command: bash -c "flake8 --exclude=migrations,__init__.py,__pycache__,settings.py . && mypy . && python manage.py test && ./wait-for-it.sh postgres:5432 -t 45 --strict -- gunicorn --bind :3000 --workers 3 --reload restaurants.wsgi:application"
+    command: bash -c "flake8 --exclude=migrations,__init__.py,__pycache__,settings.py . && mypy --exclude /migrations/ . && python manage.py test && ./wait-for-it.sh postgres:5432 -t 45 --strict -- gunicorn --bind :3001 --workers 3 --reload restaurants.wsgi:application"
 
 
 
