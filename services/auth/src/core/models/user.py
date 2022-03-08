@@ -60,7 +60,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     objects: UserManager = UserManager()
 
     EMAIL_FIELD = "email"
-    USERNAME_FIELD = "email"
+    USERNAME_FIELD = "username"
+    REQUIRED_FIELDS = ["email"]
 
     class Meta:
         verbose_name = _("user")
