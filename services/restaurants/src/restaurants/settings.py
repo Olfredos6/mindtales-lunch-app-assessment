@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
     'core'
 ]
 
@@ -141,7 +142,7 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# Django-rest
+# DRF
 DEFAULT_RENDERER_CLASSES = ['rest_framework.renderers.JSONRenderer']
 REST_FRAMEWORK = {
     # Use Django's standard `django.contrib.auth` permissions,

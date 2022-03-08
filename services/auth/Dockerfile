@@ -1,7 +1,3 @@
-FROM python:3.10-slim
+FROM base-django:latest
 WORKDIR /auth-app
-COPY ./src /auth-app
-RUN apt update && \
-    apt upgrade -y && \
-    pip install --upgrade pip && \
-    pip install -r requirements.txt
+COPY ./src .

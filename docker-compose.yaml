@@ -11,7 +11,7 @@ services:
 
 
   postgres:
-    image: postgres:latest
+    image: postgres:14.2
     restart: unless-stopped
     env_file: ./services/postgres/.env
     volumes:
@@ -20,7 +20,7 @@ services:
   auth:
     build: ./services/auth
     # @TODO Uncomment the line below
-    # restart: unless-stopped 
+    restart: unless-stopped
     depends_on:
       - postgres
       - reverser
@@ -36,6 +36,7 @@ services:
 
   restaurants:
     build: ./services/restaurants
+    restart: unless-stopped
     depends_on:
       - postgres
       - reverser
@@ -49,6 +50,22 @@ services:
       - ./services/restaurants/.env
     command: bash -c "flake8 --exclude=migrations,__init__.py,__pycache__,settings.py . && mypy --exclude /migrations/ . && python manage.py test && ./wait-for-it.sh postgres:5432 -t 45 --strict -- gunicorn --bind :3001 --workers 3 --reload restaurants.wsgi:application"
 
+  votes:
+    build: ./services/votes
+    restart: unless-stopped
+    depends_on:
+      - postgres
+      - reverser
+      - auth
+      - restaurants
+    expose:
+      - "3002"
+    env_file:
+      - ./global-django.env
+      - ./services/votes/.env
+    volumes:
+      - "./services/votes/src:/votes-app"
+    command: bash -c "flake8 --exclude=migrations,__init__.py,__pycache__,settings.py . && mypy --exclude /migrations/ . && python manage.py test && ./wait-for-it.sh postgres:5432 -t 45 --strict -- gunicorn --bind :3002 --workers 3 --reload votes.wsgi:application"
 
 
 

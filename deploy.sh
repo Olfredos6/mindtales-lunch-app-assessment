@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
 # Use this script to deploy start the app
-
 # create necessary folder if they do not exist already
 # data folder for the postgres service
 if [ ! -d ./services/postgres/data ]; then
@@ -9,5 +8,32 @@ if [ ! -d ./services/postgres/data ]; then
 fi
 
 
-# start all the services
-docker-compose up
+# build the base image for django apps
+( cd django-base-img && docker build -t base-django:latest . && cd .. )
+
+# build all the services
+docker-compose build
+
+# # compose start services
+docker-compose up -d
+
+# wait for postgres to come up before starting to apply migrations
+./wait-for-it.sh 127.0.0.1:5432 -t 5 -- echo "Starting deployment..."
+
+ss -lnp | grep -q 5432
+if [[ "$?" == "1" ]]
+then       
+    # django run migrations
+    echo ============ auth ====================
+    docker-compose exec auth  bash -c 'python manage.py makemigrations && python manage.py migrate core'
+    docker-compose exec auth python manage.py migrate
+    echo ============ restaurants ====================
+    docker-compose exec restaurants bash -c 'python manage.py makemigrations &&  python manage.py migrate'
+    echo ============ votes ====================
+    docker-compose exec votes bash -c 'python manage.py makemigrations && python manage.py migrate'
+
+    docker-compose logs -f
+
+else
+   "Postgres not started!"
+fi
