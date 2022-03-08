@@ -16,6 +16,6 @@ class CustomTokenAuth(authentication.BaseAuthentication):
         response = requests.get("http://auth:3000/auth/users", headers=headers)
 
         if not response.ok:
-            raise exceptions.AuthenticationFailed(response.text)
+            raise exceptions.AuthenticationFailed(response.json())
 
         return (response.json(), None)  # authentication successful
