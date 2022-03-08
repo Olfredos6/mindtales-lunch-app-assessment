@@ -7,4 +7,3 @@ from voteapi.custom_auth import CustomTokenAuth
 class VoteViewSet(ModelViewSet):
     queryset = Vote.objects.all()
     serializer_class = VoteSerializer
-    authentication_classes = [CustomTokenAuth]
