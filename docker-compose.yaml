@@ -16,6 +16,8 @@ services:
     env_file: ./services/postgres/.env
     volumes:
       - "./services/postgres/data:/var/lib/postgresql/data"
+    ports:
+      - "5432:5432"
     
   auth:
     build: ./services/auth
@@ -32,7 +34,7 @@ services:
     expose:
       - "3000"
     # Do not forget adding "python manage.py makemigrations && python manage.py migrate" oOR MAYBE CHANGE BUILD SCRIPT
-    command: bash -c "flake8 --exclude=migrations,__init__.py,__pycache__,settings.py . && mypy . && python manage.py test && ./wait-for-it.sh postgres:5432 -t 60 --strict -- gunicorn --bind :3000 --workers 3 --reload auth.wsgi:application"
+    command: bash -c "flake8 --exclude=migrations,__init__.py,__pycache__,settings.py . && mypy . && python manage.py test && gunicorn --bind :3000 --workers 3 --reload auth.wsgi:application"
 
   restaurants:
     build: ./services/restaurants
@@ -48,7 +50,7 @@ services:
     env_file:
       - ./global-django.env
       - ./services/restaurants/.env
-    command: bash -c "flake8 --exclude=migrations,__init__.py,__pycache__,settings.py . && mypy --exclude /migrations/ . && python manage.py test && ./wait-for-it.sh postgres:5432 -t 45 --strict -- gunicorn --bind :3001 --workers 3 --reload restaurants.wsgi:application"
+    command: bash -c "flake8 --exclude=migrations,__init__.py,__pycache__,settings.py . && mypy --exclude /migrations/ . && python manage.py test && gunicorn --bind :3001 --workers 3 --reload restaurants.wsgi:application"
 
   votes:
     build: ./services/votes
@@ -65,7 +67,7 @@ services:
       - ./services/votes/.env
     volumes:
       - "./services/votes/src:/votes-app"
-    command: bash -c "flake8 --exclude=migrations,__init__.py,__pycache__,settings.py . && mypy --exclude /migrations/ . && python manage.py test && ./wait-for-it.sh postgres:5432 -t 45 --strict -- gunicorn --bind :3002 --workers 3 --reload votes.wsgi:application"
+    command: bash -c "flake8 --exclude=migrations,__init__.py,__pycache__,settings.py . && mypy --exclude /migrations/ . && python manage.py test && gunicorn --bind :3002 --workers 3 --reload votes.wsgi:application"
 
 
 

@@ -1,5 +1,5 @@
 from rest_framework.routers import DefaultRouter
-from core.views import VoteViewSet
+from voteapi.views import VoteViewSet
 
 router = DefaultRouter()
 router.register(r"votes", VoteViewSet)
