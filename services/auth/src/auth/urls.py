@@ -6,6 +6,7 @@ from core import views
 
 router = routers.DefaultRouter()
 router.register(r'employees', views.EmployeeViewSet)
+router.register(r'managers', views.RestaurantManagerViewSet)
 
 
 urlpatterns = [

@@ -18,4 +18,8 @@ class CustomTokenAuth(authentication.BaseAuthentication):
         if not response.ok:
             raise exceptions.AuthenticationFailed(response.json())
 
-        return (response.json(), None)
+        # inject token in payload in case the view needs it
+        user = response.json()
+        user['token'] = token
+
+        return (user, None)
