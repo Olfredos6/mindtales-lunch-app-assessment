@@ -6,6 +6,10 @@ from rest_framework.decorators import action
 from django.shortcuts import get_object_or_404
 import requests
 from rest_framework.response import Response
+from os import getenv
+
+
+MANAGER_BASE_URL = getenv('MANAGER_BASE_URL')
 
 
 class RestaurantViewSet(ModelViewSet):
@@ -32,8 +36,10 @@ class RestaurantViewSet(ModelViewSet):
             'Authorization': request.user.get("token")
         }
 
-        # if request.method == "GET":
-        #     response = requests.get(f"/auth/manager?restaurant={payload.get("id")}")
+        # Handling of methods
+        if request.method == "GET":
+            response = requests.get(f"{MANAGER_BASE_URL}?restaurant={payload.get('id')}")
+            return Response(response)
         
         return Response(RestaurantSerializer(restaurant).data)
 

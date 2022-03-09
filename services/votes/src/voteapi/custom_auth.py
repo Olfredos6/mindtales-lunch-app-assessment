@@ -1,6 +1,7 @@
 from rest_framework import exceptions
 from rest_framework import authentication
 import requests
+from os import getenv
 
 
 class CustomTokenAuth(authentication.BaseAuthentication):
@@ -13,7 +14,7 @@ class CustomTokenAuth(authentication.BaseAuthentication):
 
         # validates from auth service
         headers = {"Authorization": token}
-        response = requests.get("http://auth:3000/auth/users", headers=headers)
+        response = requests.get(f"{getenv('AUTH_SERVICE_BASE_URL')}/users", headers=headers)
 
         if not response.ok:
             raise exceptions.AuthenticationFailed(response.json())

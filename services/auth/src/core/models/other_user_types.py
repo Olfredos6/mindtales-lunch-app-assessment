@@ -1,4 +1,5 @@
 from django.contrib.auth import get_user_model
+from django.db import models
 
 
 User = get_user_model()
@@ -15,6 +16,6 @@ class Employee(User):  # type: ignore
 
 class RestaurantManager(User):  # type: ignore
     '''
-        Represents a restaturant manager
+        Represents a restaurant manager
     '''
     pass
