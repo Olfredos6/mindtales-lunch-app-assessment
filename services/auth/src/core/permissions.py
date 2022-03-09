@@ -10,6 +10,6 @@ class IsSuperUser(permissions.BasePermission):
     message = "Superuser accesss required to permform this operation"
 
     def has_permission(self, request, view):
-        if request.user.get("is_superuser") is True:
+        if request.user.is_superuser is True:
             return True
         return request.method in permissions.SAFE_METHODS

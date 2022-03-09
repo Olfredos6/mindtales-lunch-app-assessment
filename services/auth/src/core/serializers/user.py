@@ -1,4 +1,3 @@
-from urllib import request
 from rest_framework import serializers
 from core.models import Employee, RestaurantManager
 from django.contrib.auth import get_user_model

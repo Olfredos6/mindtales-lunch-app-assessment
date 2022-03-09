@@ -14,7 +14,10 @@ class CustomTokenAuth(authentication.BaseAuthentication):
 
         # validates from auth service
         headers = {"Authorization": token}
-        response = requests.get(f"{getenv('AUTH_SERVICE_BASE_URL')}/users", headers=headers)
+        response = requests.get(
+            f"{getenv('AUTH_SERVICE_BASE_URL')}/users",
+            headers=headers
+        )
 
         if not response.ok:
             raise exceptions.AuthenticationFailed(response.json())

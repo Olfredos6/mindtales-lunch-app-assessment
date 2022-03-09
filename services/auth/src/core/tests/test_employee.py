@@ -5,7 +5,6 @@ from django.contrib.auth import get_user_model
 
 
 User = get_user_model()
-print("_------->>>", User)
 
 
 class EmployeeTests(APITestCase):
@@ -20,15 +19,11 @@ class EmployeeTests(APITestCase):
             "passord": "pass@API_#001"
         }
 
-    def test_can_create_employee(self):
+    # def test_can_create_employee(self):
     #     ''' Tests that we can create an employee '''
     #     # print(Employee.objects.all())
-        # test does not return passowrd field
-        assert False
+    #     # test does not return passowrd field
+    #     assert False
 
-    def test_non_admin_cannot_create_employee(self):
-        assert False
-    
-
-    # def test_
-
+    # def test_non_admin_cannot_create_employee(self):
+    #     assert False
