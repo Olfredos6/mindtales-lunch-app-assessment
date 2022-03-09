@@ -21,7 +21,14 @@ class EmployeeTests(APITestCase):
         }
 
     def test_can_create_employee(self):
-        pass
     #     ''' Tests that we can create an employee '''
     #     # print(Employee.objects.all())
-    #     assert False
+        # test does not return passowrd field
+        assert False
+
+    def test_non_admin_cannot_create_employee(self):
+        assert False
+    
+
+    # def test_
+

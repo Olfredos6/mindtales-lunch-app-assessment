@@ -4,11 +4,13 @@ from core.models import Employee, RestaurantManager
 from core.serializers.user import EmployeeSerializer, \
     RestaurantManagerSerializer, UserSerializer
 from rest_framework.decorators import api_view
+from rest_framework.permissions import IsAdminUser
 
 
 class EmployeeViewSet(viewsets.ModelViewSet):
     queryset = Employee.objects.all()
     serializer_class = EmployeeSerializer
+    permission_class = [IsAdminUser]
 
 
 class RestaurantManagerViewSet(viewsets.ModelViewSet):

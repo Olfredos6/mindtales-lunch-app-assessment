@@ -1,3 +1,4 @@
+from urllib import request
 from rest_framework import serializers
 from core.models import Employee, RestaurantManager
 from django.contrib.auth import get_user_model
@@ -13,14 +14,28 @@ class UserSerializer(serializers.ModelSerializer):
         exclude = ['password']
 
 
-class EmployeeSerializer(serializers.ModelSerializer):
+class OtherUserSerializer(serializers.ModelSerializer):
+
+    def create(self, validated_data):
+        Model = self.Meta.model
+        password = validated_data.get("password")
+
+        instance = Model(**validated_data)
+
+        instance.set_password(password)
+        instance.save()
+
+        return instance
+
+
+class EmployeeSerializer(OtherUserSerializer):
 
     class Meta:
         model = Employee
         fields = '__all__'
 
 
-class RestaurantManagerSerializer(serializers.ModelSerializer):
+class RestaurantManagerSerializer(OtherUserSerializer):
 
     class Meta:
         model = RestaurantManager
