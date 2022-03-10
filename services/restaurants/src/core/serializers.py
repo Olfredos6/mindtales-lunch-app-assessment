@@ -1,6 +1,5 @@
 from core.models import Restaurant, Menu, MenuItem
 from rest_framework import serializers
-from collections import OrderedDict
 
 
 class RestaurantSerializer(serializers.ModelSerializer):
@@ -11,6 +10,7 @@ class RestaurantSerializer(serializers.ModelSerializer):
 
 
 class MenuSerializer(serializers.ModelSerializer):
+    votable = serializers.BooleanField()
 
     class Meta:
         model = Menu
@@ -23,9 +23,7 @@ class MenuItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = MenuItem
         fields = "__all__"
-    
 
-    
     def to_representation(self, instance):
         '''
             Because we want the type of the item
@@ -43,6 +41,7 @@ class DetailedMenuSerializer(serializers.ModelSerializer):
         includes menu items
     '''
     items = MenuItemSerializer(read_only=True, many=True)
+
     class Meta:
         model = Menu
         fields = "__all__"

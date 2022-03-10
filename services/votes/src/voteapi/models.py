@@ -11,8 +11,9 @@ class Vote(models.Model):
         default=uuid.uuid4,
         editable=False
     )
-    employee: models.EmailField = models.EmailField()
+    employee: models.IntegerField = models.IntegerField()
     menu: models.UUIDField = models.UUIDField()
+    point: models.IntegerField = models.IntegerField()
 
     class Meta:
         unique_together = ['employee', 'menu']

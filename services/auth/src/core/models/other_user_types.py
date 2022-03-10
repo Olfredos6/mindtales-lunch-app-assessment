@@ -10,7 +10,7 @@ class Employee(User):  # type: ignore
         Different from a RestaturantManager who is
         not considered staff.
     '''
-    is_staff = True
+    pass
 
 
 class RestaurantManager(User):  # type: ignore
