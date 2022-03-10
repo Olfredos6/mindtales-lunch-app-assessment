@@ -45,7 +45,7 @@ class MenuItem(models.Model):
 
     menu: models.ForeignKey = models.ForeignKey(
         Menu,
-        related_name='menu_item',
+        related_name='items',
         on_delete=models.CASCADE,
         null=False
     )
