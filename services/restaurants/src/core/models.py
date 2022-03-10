@@ -65,5 +65,5 @@ class MenuItem(models.Model):
 
     description: models.CharField = models.CharField(
         max_length=250,
-        null=False
+        null=True
     )
