@@ -42,16 +42,27 @@ class MenuItem(models.Model):
         default=uuid.uuid4,
         editable=False
     )
+
     menu: models.ForeignKey = models.ForeignKey(
         Menu,
         related_name='menu_item',
         on_delete=models.CASCADE,
         null=False
     )
+
+    # Need to represent the type of the menu item
+    # An menu item may be a Meal or a Drink
+    type_choices = [('M', 'meal'), ('D', 'drink')]
+    type: models.CharField=models.CharField(
+        max_length=1,
+        choices=type_choices
+    )
+
     title: models.CharField = models.CharField(
         max_length=100,
         null=False
     )
+
     description: models.CharField = models.CharField(
         max_length=250,
         null=False
