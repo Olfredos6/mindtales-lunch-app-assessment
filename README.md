@@ -3,6 +3,7 @@
 
 A solution to the MindTales' assessement for the Python Backend position. You may find the assessment's specifications at [url]here
 This solution proposes the below architecture to achieve High Availability
+![Interaction Diagram](./mind-tales-diagam.jpg)
 ## Running the solution
 To start/run the proposed solution, please proceed as follows:
 * Grant execution permission to deploy.sh
