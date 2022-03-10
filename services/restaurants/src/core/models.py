@@ -58,7 +58,7 @@ class MenuItem(models.Model):
         choices=type_choices
     )
 
-    title: models.CharField = models.CharField(
+    name: models.CharField = models.CharField(
         max_length=100,
         null=False
     )
