@@ -10,6 +10,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.exceptions import APIException
+from rest_framework.decorators import action
 
 
 class VoteViewSet(ModelViewSet):
@@ -76,3 +77,36 @@ class VoteViewSet(ModelViewSet):
         # has a differnt value than current API
 
         return Response(status.HTTP_201_CREATED)
+
+    @action(methods=['GET'], detail=False)
+    def results(self, request):
+        '''
+            Returns voting results for the day
+        '''
+        from django.db.models import Sum
+        from django.core.serializers import serialize
+
+        vote_results = \
+            Vote.objects.filter(date_casted__date=date.today())\
+            .values('menu')\
+            .annotate(total_points=Sum('point'))\
+            .order_by('-total_points')[:3]\
+
+        # return Response(
+        #     VoteSerializer(
+        #         Vote.objects.filter(date_casted__date=date.today())
+        #         .values('menu')
+        #         .annotate(total_votes=Sum('point')),
+        #         many=True
+        #     ).data
+        # )
+        print(vote_results)
+        data = {}
+        count = 1
+        for item in vote_results:
+            data[count] = {
+                'menu': item.get('menu'),
+                'points': item.get('total_points')
+            }
+            count += 1
+        return Response(data)

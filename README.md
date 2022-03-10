@@ -1,4 +1,3 @@
-
 # mindtales-menu-assessment
 
 A solution to the MindTales' assessement for the Python Backend position. You may find the assessment's specifications at [url]here
@@ -6,13 +5,20 @@ This solution proposes the below architecture to achieve High Availability
 ## Running the solution
 To start/run the proposed solution, please proceed as follows:
 * Grant execution permission to deploy.sh
-`chmod +x deploy.sh`
+
+> chmod +x deploy.sh
+
 * Because the deployment uses an NGINX service listening on port 80, please make sure nothing else listens to the same port. My favourite way of killing anything running on a port is(requires npm):
- `npx kill-port PORT_NUMBER`
+
+> npx kill-port PORT_NUMBER
+
 * Or make sure no similar service such as a local NGINX installation is running
-`sudo systemctl stop nginx`
+
+> sudo systemctl stop nginx
+
 * Then run the script
-`./deploy.sh`
+
+> ./deploy.sh
 
 ## Authentication
 API requires authenticated access on most endooints by default. Send a POST request with username and email to `auth/token` to obtain an authentication token.
@@ -93,10 +99,27 @@ Then add menus to it. A menu is only submitted by a manager.
             {"name": "Tuna and avocado salad"},
         ]
     }
-### Votes API
+An important endpoint is the one that allows collecting the list of the day's menus. 
 
+    Get today's menus (Authenticated only)
+    GET /restaurants/votable_menus
+
+### Votes API
+Runs on port 3002 and handles requests to /votes
+To cast a vote, the request's body must include entries of the form `{point: menu-id}`. The point can only be a value among 1,2, and 3. 
+
+    POST votes/ (employees only)
+    {
+    	"1": "e59f3dd3-36b8-47ac-af7a-b4ea320f552c",
+        "2": "13fe10d1-19b2-40ce-ab19-ee291f85143c",
+    	"3": "fe2cfc56-e875-4fc4-a0be-c5ee1acc566c"
+    }
+
+Getting the voting result for the day
+
+    GET votes/result 
+Returns the top 3 voted menus
 
 ## Improvements
 List of a few things that could improve the solution
 - Authentication token expiry
-- improve build process by using a base image for django-based services

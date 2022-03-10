@@ -25,5 +25,6 @@ class VotesTestCase(APITestCase):
     #     '''
     #     assert False
 
-    # def test_bad_request_if_all_three_menus_are_not_different(self):
+    # def test_bad_request_if_not_uniqe_menus(self):
+    
     #     assert False
