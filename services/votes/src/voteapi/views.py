@@ -32,7 +32,6 @@ class VoteViewSet(ModelViewSet):
         # make sure the points are correct by making usre the
         # sum is 6.
         keys = [int(k) for k in vote.keys()]
-        print("---> KEYS", keys)
         if sum(keys) != 6 or list(filter(lambda x: x < 0, keys)):
             return Response(status.HTTP_400_BAD_REQUEST)
 
@@ -53,19 +52,20 @@ class VoteViewSet(ModelViewSet):
         set_of_voted = set(vote.values())
         if len(set_of_votable.intersection(set_of_voted)) != 3:
             raise APIException(
-                f' \
+                ' \
                 All menus must be included in the list of \
                 votable menus. See list at /restaurants/votable_menus \
+                and be unique.\
                 '
             )
 
         # serialize the vote
         serialized_votes = self.get_serializer(
             data=[{
-                'employee':employee.get('id'),
-                'point':point,
-                'menu':vote.get(point)
-            } for point in vote ],
+                'employee': employee.get('id'),
+                'point': point,
+                'menu': vote.get(point)
+            } for point in vote],
             many=True
         )
         serialized_votes.is_valid(raise_exception=True)
