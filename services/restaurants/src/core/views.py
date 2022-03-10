@@ -1,7 +1,7 @@
 from rest_framework import generics
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.exceptions import APIException
-from core.models import Restaurant, Menu
+from core.models import MenuItem, Restaurant, Menu
 from core.serializers import MenuItemSerializer, RestaurantSerializer, MenuSerializer, DetailedMenuSerializer
 from core.permissions import IsSuperUser
 from rest_framework.decorators import api_view, action
@@ -117,24 +117,14 @@ def menus(request, restaurant_id: uuid4) -> Response:
         ).data
     )
 
-# @api_view(http_method_names=['GET', 'POST', 'DELETE'])
-# def menus(request, restaurant_id: uuid4, menu_id: uuid4 = None) -> Response:
-#     '''
-#         Handles requests to the restaurants/<slug:restaurant_id>/menus
-#         Implements GET, POST, and DELETE.
-#         @TODO: Add support for more methods
-#     '''
-#     print(f"Received Paramns: Resto {restaurant_id} | Menu: {menu_id}")
-   
+@api_view(http_method_names=['GET', 'POST', 'DELETE'])
+def menu_detail(request, restaurant_id: uuid4, menu_id: uuid4 = None) -> Response:
+    '''
+        Handles requests to the restaurants/<slug:restaurant_id>/menus
+        Implements GET, POST, and DELETE.
+        @TODO: Add support for more methods
+    '''   
+    menu = get_object_or_404(Menu, id=menu_id, restaurant__id=restaurant_id)
 
-#     # Handles GET. Returns the menu matching menu_id if sepcified
-#     # Otherwise, return all menus matching the restaturant with id
-#     # restaurant_id
-#     return Response(
-#         MenuSerializer(
-#             Menu.objects.filter(id=menu_id)
-#             if menu_id else
-#             Menu.objects.filter(restaurant=restaurant_id),
-#             many=False if menu_id else True
-#         ).data
-#     )
+    # returns the menu
+    return Response(DetailedMenuSerializer(menu).data)
