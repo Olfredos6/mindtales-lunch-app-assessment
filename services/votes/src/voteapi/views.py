@@ -13,30 +13,44 @@ from rest_framework.exceptions import APIException
 from rest_framework.decorators import action
 
 
+# class OldViewSet(ModelViewSet):
+#     queryset = Vote.objects.all()
+#     serializer_class = VoteSerializer
+#     permission_classes = [IsEmployee]
+
+#     def create(self, request):
+#         '''
+#             Old way of voting, one menu per day
+#             per employee.
+#         '''
+#         employee = request.user
+#         # vote = request.data
+#         print("Haaah")
+
+#         # make sure this employee has not voted today yet
+#         if Vote.objects.filter(
+#             employee=employee.get('id'),
+#             date_casted__date=date.today()
+#         ).count() == 1:
+#             raise APIException(
+#                 f"Employee {employee.get('username')} has already voted"
+#             )
+
+#         return Response({"old": "voting"})
+
+
 class VoteViewSet(ModelViewSet):
     queryset = Vote.objects.all()
     serializer_class = VoteSerializer
     permission_classes = [IsEmployee]
 
-    def create(self, request):
-        employee = request.user
-        vote = request.data
-
-        # make sure this employee has not voted today yet
-        if Vote.objects.filter(
-            employee=employee.get('id'),
-            menu=vote.get('menu'),
-            date_casted__date=date.today()
-        ).exists():
-            return Response(status.HTTP_400_BAD_REQUEST)
-
-        # make sure the points are correct by making usre the
-        # sum is 6.
-        keys = [int(k) for k in vote.keys()]
-        if sum(keys) != 6 or list(filter(lambda x: x < 0, keys)):
-            return Response(status.HTTP_400_BAD_REQUEST)
-
-        # make sure each menu does exist
+    def menus_are_votable(self, employee: dict, menus: list=[]) -> None:
+        '''
+            Used to verify that all supplied menus
+            are available for voting. If all is well, execution
+            will carry on. Otherwise, an APIException exception
+            is raised
+        '''
         response = Request.get(
             getenv('VOTABLE_URL'),
             headers={
@@ -50,8 +64,9 @@ class VoteViewSet(ModelViewSet):
         # make sure all voted menus are included in the list
         # of votable menus
         set_of_votable = set([menu.get('id') for menu in votables])
-        set_of_voted = set(vote.values())
-        if len(set_of_votable.intersection(set_of_voted)) != 3:
+        set_of_voted = set(menus.values())
+
+        if len(set_of_votable.intersection(set_of_voted)) != len(menus):
             raise APIException(
                 ' \
                 All menus must be included in the list of \
@@ -59,6 +74,28 @@ class VoteViewSet(ModelViewSet):
                 and be unique.\
                 '
             )
+
+    def create(self, request):
+        employee = request.user
+        vote = request.data
+
+        # make sure this employee has not voted today yet
+        if Vote.objects.filter(
+            employee=employee.get('id'),
+            date_casted__date=date.today()
+        ).count() == 3:
+            raise APIException(
+                f"Employee {employee.get('username')} has already voted"
+            )
+
+        # make sure the points are correct by making sure the
+        # sum is 6.
+        keys = [int(k) for k in vote.keys()]
+        if sum(keys) != 6 or list(filter(lambda x: x < 0, keys)):
+            return Response(status.HTTP_400_BAD_REQUEST)
+
+        # make sure each menu does exist
+        self.menus_are_votable(employee, vote.values())
 
         # serialize the vote
         serialized_votes = self.get_serializer(
@@ -78,13 +115,47 @@ class VoteViewSet(ModelViewSet):
 
         return Response(status.HTTP_201_CREATED)
 
+    @action(methods=['GET'], detail=True)
+    def old_voting_view(self, request, pk):
+        '''
+            Old way of voting, one menu per day
+            per employee.
+        '''
+        employee = request.user
+        vote = request.data
+
+        # make sure this employee has not voted today yet
+        if Vote.objects.filter(
+            employee=employee.get('id'),
+            date_casted__date=date.today()
+        ).count() == 1:
+            raise APIException(
+                f"Employee {employee.get('username')} has already voted"
+            )
+
+        # serialize
+        serialized_vote = VoteSerializer(
+            data={
+                'employee': employee.get('id'),
+                'menu': pk,
+                'point': 3
+            })
+        
+        serialized_vote.is_valid(raise_exception=True)
+
+        # ensure menu is among votable
+        self.menus_are_votable(employee, vote.values())
+
+        serialized_vote.save()
+
+        return Response(status.HTTP_201_CREATED)
+
     @action(methods=['GET'], detail=False)
     def results(self, request):
         '''
             Returns voting results for the day
         '''
         from django.db.models import Sum
-        from django.core.serializers import serialize
 
         vote_results = \
             Vote.objects.filter(date_casted__date=date.today())\
@@ -92,15 +163,7 @@ class VoteViewSet(ModelViewSet):
             .annotate(total_points=Sum('point'))\
             .order_by('-total_points')[:3]\
 
-        # return Response(
-        #     VoteSerializer(
-        #         Vote.objects.filter(date_casted__date=date.today())
-        #         .values('menu')
-        #         .annotate(total_votes=Sum('point')),
-        #         many=True
-        #     ).data
-        # )
-        print(vote_results)
+
         data = {}
         count = 1
         for item in vote_results:

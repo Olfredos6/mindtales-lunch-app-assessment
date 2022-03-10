@@ -11,5 +11,4 @@ class IsEmployee(BasePermission):
             The authenticated user should
             return true for is_staff
         '''
-        print(request.user)
         return request.user.get('is_staff')

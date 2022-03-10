@@ -121,5 +121,4 @@ Getting the voting result for the day
 Returns the top 3 voted menus
 
 ## Improvements
-List of a few things that could improve the solution
 - Authentication token expiry

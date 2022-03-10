@@ -104,6 +104,13 @@ def menus(request, restaurant_id: str) -> Response:
         if "drinks" not in request.data:
             raise APIException("Request body missing key 'drinks'")
 
+        # ensure resturant can only past once a day
+        if Menu.objects.filter(
+            date_created__date=date.today(),
+            restaurant=restaurant
+        ).exists():
+            raise APIException("Menu for today already submitted.")
+
         # we start by creating the menu
         new_menu = Menu.objects.create(restaurant=restaurant)
 

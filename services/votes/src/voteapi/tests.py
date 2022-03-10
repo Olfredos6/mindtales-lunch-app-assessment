@@ -26,5 +26,7 @@ class VotesTestCase(APITestCase):
     #     assert False
 
     # def test_bad_request_if_not_uniqe_menus(self):
-    
     #     assert False
+
+    # def test_old_version_api_only_accepts_one_menu(self):
+    #    assert False
