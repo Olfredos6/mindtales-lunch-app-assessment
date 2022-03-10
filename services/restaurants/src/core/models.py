@@ -25,6 +25,11 @@ class Menu(models.Model):
         default=uuid.uuid4,
         editable=False
     )
+    restaurant: models.ForeignKey = models.ForeignKey(
+        Restaurant,
+        on_delete=models.CASCADE,
+        related_name='restaurant'
+    )
 
 
 class MenuItem(models.Model):
