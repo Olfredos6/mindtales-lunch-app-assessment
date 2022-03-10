@@ -22,7 +22,9 @@ docker-compose up -d
 
 echo ============ auth ====================
 docker-compose exec auth  bash -c 'python manage.py makemigrations && python manage.py migrate core'
+echo Migrated core...
 docker-compose exec auth python manage.py migrate
+echo Migrated auth in its entirety...
 echo ============ restaurants ====================
 docker-compose exec restaurants bash -c 'python manage.py makemigrations &&  python manage.py migrate'
 echo ============ votes ====================

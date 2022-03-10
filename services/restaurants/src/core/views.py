@@ -2,7 +2,7 @@ from rest_framework.viewsets import ModelViewSet
 from core.models import Restaurant, Menu
 from core.serializers import RestaurantSerializer, MenuSerializer
 from core.permissions import IsSuperUser
-from rest_framework.decorators import action
+from rest_framework.decorators import api_view
 from django.shortcuts import get_object_or_404
 import requests
 from rest_framework.response import Response
@@ -17,34 +17,38 @@ class RestaurantViewSet(ModelViewSet):
     serializer_class = RestaurantSerializer
     permission_classes = [IsSuperUser]
 
-    @action(methods=['GET', 'POST', 'PUT', 'PATCH'], detail=True)
-    def manager(self, request, pk):
-        '''
-            Handles GET, POST, UUPDATE, and PATCH requests to
-            /restaurants/:restaurant-pk/manager
 
-            Requests are then forwarded to /auth/managers if a restaurant
-            object match was found
-        '''
-        print("User ---->", request.user)
-        # get the restaurant object or return 404
-        restaurant = get_object_or_404(Restaurant, id=pk)
+@api_view(http_method_names=['GET', 'PATCH'])
+def manager(request, uuid):
+    '''
+        Handles GET and PATCH requests to
+        /restaurants/:restaurant-pk/manager
+        Any other method should be made through the
+        /managers endpoint
 
-        # init objects
-        payload = {'id': restaurant.id}
-        headers = {
-            'Authorization': request.user.get("token")
-        }
+        Requests are then forwarded to /managers if a restaurant
+        object match was found
+    '''
+    # get the restaurant object or return 404
+    restaurant = get_object_or_404(Restaurant, id=uuid)
 
-        # Handling of methods
-        if request.method == "GET":
-            response = requests.get(
-                f"{MANAGER_BASE_URL}?restaurant={payload.get('id')}",
-                headers=headers
-            )
-            return Response(response)
+    # init objects
+    headers = {
+        'Authorization': request.user.get("token")
+    }
 
-        return Response(RestaurantSerializer(restaurant).data)
+    # Handling of methods
+    if request.method == "GET":
+        print("---------->", f"{MANAGER_BASE_URL}/{restaurant.manager}")
+        response = requests.get(
+            f"{MANAGER_BASE_URL}/{restaurant.manager}",
+            headers=headers
+        )
+        if not response.ok:
+            return Response({'detail': response.text})
+        return Response(response.json())
+
+    return Response(RestaurantSerializer(restaurant).data)
 
 
 class MenuViewSet(ModelViewSet):

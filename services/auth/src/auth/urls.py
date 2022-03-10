@@ -11,6 +11,6 @@ router.register(r'managers', views.RestaurantManagerViewSet)
 
 urlpatterns = [
     path('auth/', include(router.urls)),
-    path('auth/token/', obtain_auth_token, name='api_token_auth'),
-    path('auth/users/', views.users),
+    path('auth/token', obtain_auth_token, name='api_token_auth'),
+    path('auth/users', views.users),
 ]

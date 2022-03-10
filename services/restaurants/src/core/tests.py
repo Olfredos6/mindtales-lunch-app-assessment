@@ -17,3 +17,6 @@ class MenuTestCase(APITestCase):
 
     # def test_can_only_upload_one_menu_per_day(self):
     #     assert False
+
+    # def test_fails_to_create_if_manager_does_not_exist(self):
+    #     assert False

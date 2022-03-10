@@ -12,6 +12,7 @@ class Restaurant(models.Model):
         editable=False
     )
     name: models.CharField = models.CharField(max_length=150)
+    manager: models.IntegerField = models.IntegerField(null=False)
 
 
 class Menu(models.Model):
