@@ -13,6 +13,21 @@ class EmployeeViewSet(viewsets.ModelViewSet):
     serializer_class = EmployeeSerializer
     permission_class = [IsAdminUser]
 
+    def create(self, request):
+        ''' Overridden because we must ensure
+            is_staff is marked as True
+        '''
+        data = {**request.data, 'is_staff': True}
+        staff_serialized = self.get_serializer(data=data)
+
+        # validate data
+        staff_serialized.is_valid(raise_exception=True)
+
+        # all is good, let's save
+        staff_serialized.save()
+
+        return Response(staff_serialized.data)
+
 
 class RestaurantManagerViewSet(viewsets.ModelViewSet):
     queryset = RestaurantManager.objects.all()
