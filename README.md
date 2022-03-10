@@ -1,3 +1,4 @@
+
 # mindtales-menu-assessment
 
 A solution to the MindTales' assessement for the Python Backend position. You may find the assessment's specifications at [url]here
@@ -108,17 +109,28 @@ An important endpoint is the one that allows collecting the list of the day's me
 Runs on port 3002 and handles requests to /votes
 To cast a vote, the request's body must include entries of the form `{point: menu-id}`. The point can only be a value among 1,2, and 3. 
 
+To differentiate between mobile clients that are still using an old version of the API, the header key represented by the environment variable  *API_HEADER_KEY_NAME* is checked by a middleware(*voteapi.middlewares.VersionControlMiddleware*) that redirects to the old view for build version <= to the value set inside the environment variable *OLD_API_MAX_BUILD*
+
+	
+
+    Old API
+    POST votes/ (employees only)
+    { "menu": <slug:menu_id> }
+	
+	
+	Latest API
     POST votes/ (employees only)
     {
-    	"1": "e59f3dd3-36b8-47ac-af7a-b4ea320f552c",
-        "2": "13fe10d1-19b2-40ce-ab19-ee291f85143c",
-    	"3": "fe2cfc56-e875-4fc4-a0be-c5ee1acc566c"
+    	point: <slug:menu_id>,
+        point: <slug:menu_id>,
+    	point: <slug:menu_id>
     }
 
 Getting the voting result for the day
 
-    GET votes/result 
-Returns the top 3 voted menus
+    GET votes/results 
+Returns the top 3 voted menus of the day
 
 ## Improvements
+List of a few things that could improve the solution
 - Authentication token expiry
