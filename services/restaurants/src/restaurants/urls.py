@@ -5,10 +5,10 @@ from django.urls import path, include
 
 router = DefaultRouter()
 router.register(r'restaurants', views.RestaurantViewSet)
-# router.register(r'restaurants/menus', views.RestaurantViewSet)
-# router.register(r'restaurants/', views.RestaurantViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),
-    path('restaurants/<slug:uuid>/manager', views.manager)
+    path('restaurants/<slug:uuid>/manager', views.manager),
+    path('restaurants/<slug:restaurant_id>/menus', views.menus),
+    path('restaurants/<slug:restaurant_id>/menus/<slug:menu_id>', views.menus)
 ]
