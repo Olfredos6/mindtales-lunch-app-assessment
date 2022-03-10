@@ -1,13 +1,14 @@
-from rest_framework import generics
+from rest_framework import status
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.exceptions import APIException
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+
 from core.models import MenuItem, Restaurant, Menu
 from core.serializers import MenuItemSerializer, RestaurantSerializer, MenuSerializer, DetailedMenuSerializer
 from core.permissions import IsSuperUser
-from rest_framework.decorators import api_view, action
 from django.shortcuts import get_object_or_404
 import requests
-from rest_framework.response import Response
 from os import getenv
 from uuid import uuid4
 
@@ -117,7 +118,7 @@ def menus(request, restaurant_id: uuid4) -> Response:
         ).data
     )
 
-@api_view(http_method_names=['GET', 'POST', 'DELETE'])
+@api_view(http_method_names=['GET', 'DELETE'])
 def menu_detail(request, restaurant_id: uuid4, menu_id: uuid4 = None) -> Response:
     '''
         Handles requests to the restaurants/<slug:restaurant_id>/menus
@@ -125,6 +126,10 @@ def menu_detail(request, restaurant_id: uuid4, menu_id: uuid4 = None) -> Respons
         @TODO: Add support for more methods
     '''   
     menu = get_object_or_404(Menu, id=menu_id, restaurant__id=restaurant_id)
+
+    if request.method == 'DELETE':
+        menu.delete()
+        return Response(status.HTTP_200_OK)
 
     # returns the menu
     return Response(DetailedMenuSerializer(menu).data)

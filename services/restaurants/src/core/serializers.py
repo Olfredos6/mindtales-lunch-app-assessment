@@ -23,6 +23,18 @@ class MenuItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = MenuItem
         fields = "__all__"
+    
+
+    
+    def to_representation(self, instance):
+        '''
+            Because we want the type of the item
+            to be displayed in full
+        '''
+        repr = super().to_representation(instance)
+        repr['type'] = instance.get_type_display()
+
+        return repr
 
 
 class DetailedMenuSerializer(serializers.ModelSerializer):
