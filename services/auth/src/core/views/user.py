@@ -4,7 +4,7 @@ from core.models import Employee, RestaurantManager
 from core.serializers.user import EmployeeSerializer, \
     RestaurantManagerSerializer, UserSerializer
 from rest_framework.decorators import api_view
-from rest_framework.permissions import IsAdminUser
+from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from core.permissions import IsSuperUser
 
 
@@ -32,9 +32,21 @@ class EmployeeViewSet(viewsets.ModelViewSet):
 class RestaurantManagerViewSet(viewsets.ModelViewSet):
     queryset = RestaurantManager.objects.all()
     serializer_class = RestaurantManagerSerializer
-    permission_classes = [IsSuperUser]
+    permission_classes = [IsSuperUser, IsAuthenticated]
 
 
 @api_view(http_method_names=['GET'])
 def users(request):
-    return Response(UserSerializer(request.user).data)
+    ''' Used by other services to collect a specific
+        user's profile as employee or restaurant manager
+    '''
+    user = request.user
+    if user.is_superuser:
+        return Response(UserSerializer(user).data)
+
+    user_rm = RestaurantManager.objects.filter(user_ptr_id=user.id)
+    user_e = Employee.objects.filter(user_ptr_id=user.id)
+    if user_rm.exists():
+        return Response(RestaurantManagerSerializer(user_rm[0]).data)
+
+    return Response(EmployeeSerializer(user_e[0]).data)

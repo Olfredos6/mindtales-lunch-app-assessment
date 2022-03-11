@@ -1,5 +1,5 @@
 from datetime import date
-import requests as Request
+import requests
 from os import getenv
 
 from voteapi.models import Vote
@@ -13,48 +13,31 @@ from rest_framework.exceptions import APIException
 from rest_framework.decorators import action
 
 
-# class OldViewSet(ModelViewSet):
-#     queryset = Vote.objects.all()
-#     serializer_class = VoteSerializer
-#     permission_classes = [IsEmployee]
-
-#     def create(self, request):
-#         '''
-#             Old way of voting, one menu per day
-#             per employee.
-#         '''
-#         employee = request.user
-#         # vote = request.data
-#         print("Haaah")
-
-#         # make sure this employee has not voted today yet
-#         if Vote.objects.filter(
-#             employee=employee.get('id'),
-#             date_casted__date=date.today()
-#         ).count() == 1:
-#             raise APIException(
-#                 f"Employee {employee.get('username')} has already voted"
-#             )
-
-#         return Response({"old": "voting"})
-
-
 class VoteViewSet(ModelViewSet):
     queryset = Vote.objects.all()
     serializer_class = VoteSerializer
     permission_classes = [IsEmployee]
 
-    def menus_are_votable(self, employee: dict, menus: list=[]) -> None:
+    def return_not_implemented(self, request):
+        return Response(status.HTTP_501_NOT_IMPLEMENTED)
+
+    def update(self, request):
+        return self.return_not_implemented(request)
+
+    def retrieve(self, request):
+        return self.return_not_implemented(request)
+
+    def menus_are_votable(self, employee: dict, menus: list = []) -> None:
         '''
             Used to verify that all supplied menus
             are available for voting. If all is well, execution
             will carry on. Otherwise, an APIException exception
             is raised
         '''
-        response = Request.get(
-            getenv('VOTABLE_URL'),
+        response = requests.get(
+            getenv('VOTABLE_URL', ''),
             headers={
-                "Authorization": employee.get('token')
+                "Authorization": employee.get('token', '')
             }
         )
         if response.ok is not True:
@@ -64,7 +47,7 @@ class VoteViewSet(ModelViewSet):
         # make sure all voted menus are included in the list
         # of votable menus
         set_of_votable = set([menu.get('id') for menu in votables])
-        set_of_voted = set(menus.values())
+        set_of_voted = set(menus)
 
         if len(set_of_votable.intersection(set_of_voted)) != len(menus):
             raise APIException(
@@ -90,9 +73,12 @@ class VoteViewSet(ModelViewSet):
 
         # make sure the points are correct by making sure the
         # sum is 6.
-        keys = [int(k) for k in vote.keys()]
-        if sum(keys) != 6 or list(filter(lambda x: x < 0, keys)):
-            return Response(status.HTTP_400_BAD_REQUEST)
+        try:
+            keys = [int(k) for k in vote.keys()]
+            if sum(keys) != 6 or list(filter(lambda x: x < 0, keys)):
+                return Response(status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            raise APIException(e)
 
         # make sure each menu does exist
         self.menus_are_votable(employee, vote.values())
@@ -140,7 +126,7 @@ class VoteViewSet(ModelViewSet):
                 'menu': pk,
                 'point': 3
             })
-        
+
         serialized_vote.is_valid(raise_exception=True)
 
         # ensure menu is among votable

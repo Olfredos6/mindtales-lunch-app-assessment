@@ -35,6 +35,7 @@ class EmployeeSerializer(OtherUserSerializer):
 
 
 class RestaurantManagerSerializer(OtherUserSerializer):
+    is_manager = serializers.BooleanField()
 
     class Meta:
         model = RestaurantManager

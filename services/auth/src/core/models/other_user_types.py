@@ -1,4 +1,5 @@
 from django.contrib.auth import get_user_model
+from django.db import models
 
 
 User = get_user_model()
@@ -17,4 +18,6 @@ class RestaurantManager(User):  # type: ignore
     '''
         Represents a restaurant manager
     '''
-    pass
+    is_manager: models.BooleanField = models.BooleanField(
+        default=True
+    )

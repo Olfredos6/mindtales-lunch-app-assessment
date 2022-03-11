@@ -1,13 +1,13 @@
 from rest_framework import status
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.exceptions import APIException
-from rest_framework.decorators import api_view, action
+from rest_framework.decorators import api_view, action, permission_classes
 from rest_framework.response import Response
 
 from core.models import Restaurant, Menu
 from core.serializers import MenuItemSerializer, \
     RestaurantSerializer, MenuSerializer, DetailedMenuSerializer
-from core.permissions import IsSuperUser
+from core.permissions import IsSuperUser, IsManager
 from django.shortcuts import get_object_or_404
 import requests
 from os import getenv
@@ -85,6 +85,7 @@ def todays_menus(self, request):
 
 
 @api_view(http_method_names=['GET', 'POST', 'DELETE'])
+@permission_classes([IsManager])
 def menus(request, restaurant_id: str) -> Response:
     '''
         Handles requests to the restaurants/<slug:restaurant_id>/menus
@@ -95,7 +96,12 @@ def menus(request, restaurant_id: str) -> Response:
 
     if request.method == 'POST':
         # post a new menu
-        # print(f"\nPOST DATA\n{request.data}\n")
+
+        # make sure the current user is the restaurant's
+        # manager
+        if restaurant.manager != request.user.get('id'):
+            raise APIException("No permission to perform this action.\
+            Does this resource belong to you?")
 
         # check request body has correct items
         if "meals" not in request.data:
