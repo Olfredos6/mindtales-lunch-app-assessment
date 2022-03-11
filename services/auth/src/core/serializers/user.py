@@ -16,6 +16,7 @@ class UserSerializer(serializers.ModelSerializer):
 class OtherUserSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
+        print('------------>', validated_data)
         Model = self.Meta.model
         password = validated_data.get("password")
 
@@ -35,7 +36,6 @@ class EmployeeSerializer(OtherUserSerializer):
 
 
 class RestaurantManagerSerializer(OtherUserSerializer):
-    is_manager = serializers.BooleanField()
 
     class Meta:
         model = RestaurantManager
